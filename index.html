@@ -1,186 +1,308 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="utf-8"/>
-		<title>Hebrew Alphabetic Virtual Keyboard</title>
-		<style>
-			button {
-				font-size: 3em;
-				margin: 0.4em;
-				padding: 0.2em;
-			}
+<html lang="en">
 
-			textarea {
-				font-size: 2em;
-			}
-		</style>
-	</head>
-	<body>
-		<h1>Hebrew Alphabet Basic Keyboard</h1>
-		<textarea id="textOutput" dir="rtl"></textarea>
-		<div dir="rtl" style="text-align:left">
-		<div>
-<button type="button" id="typeHebrewLetterAlef"  onclick="document.getElementById('textOutput').value += '\u05D0'">&#x05D0;</button>
-<button type="button" id="typeHebrewLetterBet"  onclick="document.getElementById('textOutput').value += '\u05D1'">&#x05D1;</button>
-<button type="button" id="typeHebrewLetterGimel"  onclick="document.getElementById('textOutput').value += '\u05D2'">&#x05D2;</button>
-<button type="button" id="typeHebrewLetterDalet"  onclick="document.getElementById('textOutput').value += '\u05D3'">&#x05D3;</button>
-<button type="button" id="typeHebrewLetterHe"  onclick="document.getElementById('textOutput').value += '\u05D4'">&#x05D4;</button>
-<button type="button" id="typeHebrewLetterVav"  onclick="document.getElementById('textOutput').value += '\u05D5'">&#x05D5;</button>
-<button type="button" id="typeHebrewLetterZayin"  onclick="document.getElementById('textOutput').value += '\u05D6'">&#x05D6;</button>
-<button type="button" id="typeHebrewLetterHet"  onclick="document.getElementById('textOutput').value += '\u05D7'">&#x05D7;</button>
-<button type="button" id="typeHebrewLetterTet"  onclick="document.getElementById('textOutput').value += '\u05D8'">&#x05D8;</button>
-<button type="button" id="typeHebrewLetterYod"  onclick="document.getElementById('textOutput').value += '\u05D9'">&#x05D9;</button>
-</div>
-<div>
-<button type="button" id="typeHebrewLetterKaf"  onclick="document.getElementById('textOutput').value += '\u05DB'">&#x05DB;</button>
-<button type="button" id="typeHebrewLetterFinalKaf"  onclick="document.getElementById('textOutput').value += '\u05DA'">&#x05DA;</button>
+<head>
+    <meta charset="utf-8" />
+    <title>Hebrew Alphabet Basic Keyboard</title>
+    <style>
 
-<button type="button" id="typeHebrewLetterLamed"  onclick="document.getElementById('textOutput').value += '\u05DC'">&#x05DC;</button>
-<button type="button" id="typeHebrewLetterMem"  onclick="document.getElementById('textOutput').value += '\u05DE'">&#x05DE;</button>
-<button type="button" id="typeHebrewLetterFinalMem"  onclick="document.getElementById('textOutput').value += '\u05DD'">&#x05DD;</button>
+        /* The page uses a serif font throughout. */
+        * {
+            font-family: arial, sans-serif;
+        }
 
-<button type="button" id="typeHebrewLetterNun"  onclick="document.getElementById('textOutput').value += '\u05E0'">&#x05E0;</button>
-<button type="button" id="typeHebrewLetterFinalNun"  onclick="document.getElementById('textOutput').value += '\u05DF'">&#x05DF;</button>
 
-<button type="button" id="typeHebrewLetterSamekh"  onclick="document.getElementById('textOutput').value += '\u05E1'">&#x05E1;</button>
-<button type="button" id="typeHebrewLetterAyin"  onclick="document.getElementById('textOutput').value += '\u05E2'">&#x05E2;</button>
-<button type="button" id="typeHebrewLetterPe"  onclick="document.getElementById('textOutput').value += '\u05E4'">&#x05E4;</button>
-<button type="button" id="typeHebrewLetterFinalPe"  onclick="document.getElementById('textOutput').value += '\u05E3'">&#x05E3;</button>
+        button {
+            font-size: 3em;
+            margin: 0.4em;
+            padding: 0.2em;
+            border-radius: 0.3em;
+            background-color: whitesmoke;
+            border-color: gray;
+            border-width: 0.12em;
+        }
 
-<button type="button" id="typeHebrewLetterTsadi"  onclick="document.getElementById('textOutput').value += '\u05E6'">&#x05E6;</button>
-<button type="button" id="typeHebrewLetterFinalTsadi"  onclick="document.getElementById('textOutput').value += '\u05E5'">&#x05E5;</button>
-</div>
-<div>
-<button type="button" id="typeHebrewLetterQof"  onclick="document.getElementById('textOutput').value += '\u05E7'">&#x05E7;</button>
-<button type="button" id="typeHebrewLetterResh"  onclick="document.getElementById('textOutput').value += '\u05E8'">&#x05E8;</button>
-<button type="button" id="typeHebrewLetterShin"  onclick="document.getElementById('textOutput').value += '\u05E9'">&#x05E9;</button>
-<button type="button" id="typeHebrewLetterTav"  onclick="document.getElementById('textOutput').value += '\u05EA'">&#x05EA;</button>
-</div>
+        /* Round the text area, where the line ends. In a right to left language
+         this border rounding is at the top-left */
+        textarea {
+            font-size: 3em;
 
-		</div>
-	</body>
+            /* Dear future programmer,
+              Switch the values of border-top-left-radius
+              and border-top-right-radius when modifying this
+              code to write text for a language that flows in a different direction.
+            */
+            border-top-left-radius: 1.0em;
+            border-top-right-radius: 0.0em;
+            
+            top: 0px;
+            height: 33vh
+        }
+
+        h2 {
+            margin-top: 1.5em;
+            margin-bottom: 0.0em;
+            text-align: center;
+        }
+
+        /* Some classes for style, for those programmers who want
+        a more specific style:
+        .punctuation {}
+        .alphabet {}
+        .whitespace {}
+        .combinations {}
+        .finals {}
+        */
+    </style>
+
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script>
+
+        // A variable that defines the Hebrew alphabet.
+        // Each character is defined as the 
+        // text that it will write in the text box,
+        // the buttonLabel which is the text that is written on the button
+        // and the description, which is what a screenreader would describe
+        // the button as.
+        var alphabet = [
+            { text: "\u05D0", buttonLabel: "\u05D0 Alef", description: "Alef" },
+            { text: "\u05D1", buttonLabel: "\u05D1\u05BC Bet", description: "Bet" },
+            { text: "\u05D1", buttonLabel: "\u05D1 Vet", description: "Vet" },
+            { text: "\u05D2", buttonLabel: "\u05D2 Gimel", description: "Gimel" },
+            { text: "\u05D3", buttonLabel: "\u05D3 Dalet", description: "Dalet" },
+            { text: "\u05D4", buttonLabel: "\u05D4 He", description: "Hey" },
+            { text: "\u05D5", buttonLabel: "\u05D5 Vav", description: "vav" },
+            { text: "\u05D6", buttonLabel: "\u05D6 Zayin", description: "zayen" },
+            { text: "\u05D7", buttonLabel: "\u05D7 Chet", description: "khet" },
+            { text: "\u05D8", buttonLabel: "\u05D8 Tet", description: "tet" },
+            { text: "\u05D9", buttonLabel: "\u05D9 Yod", description: "yod" },
+            { text: "\u05DB", buttonLabel: "\u05DB\u05BC Kaf", description: "kaf" },
+            { text: "\u05DB", buttonLabel: "\u05DB Khaf", description: "khaf" },
+            { text: "\u05DC", buttonLabel: "\u05DC Lamed", description: "lamed" },
+            { text: "\u05DE", buttonLabel: "\u05DE Mem", description: "mem" },
+            { text: "\u05E0", buttonLabel: "\u05E0 Nun", description: "nun" },
+            { text: "\u05E1", buttonLabel: "\u05E1 Samekh", description: "samekh" }, 
+            // I chose to spell Samekh with "kh here" even though the website, I am basing
+            // it on is different.
+            
+            { text: "\u05E2", buttonLabel: "\u05E2 Ayin", description: "ayin" },
+            { text: "\u05E4\u05BC", buttonLabel: "\u05E4\u05BC Peh", description: "pey" },
+            { text: "\u05E4\u05BC", buttonLabel: "\u05E4 Feh", description: "fey" },
+            { text: "\u05E6", buttonLabel: "\u05E6 Tsadeh", description: "tsadi" },
+            { text: "\u05E7", buttonLabel: "\u05E7 Qof", description: "kuf" },
+            { text: "\u05E8", buttonLabel: "\u05E8 Resh", description: "resh" },
+            { text: "\u05E9", buttonLabel: "\u05E9 Shin/Sin", description: "shin or sin" },
+            { text: "\u05E9", buttonLabel: "\u05E9\u05C1 Shin", description: "shin" },
+            { text: "\u05E9\u05C2", buttonLabel: "\u05E9\u05C2 Sin", description: "sin" },
+            { text: "\u05EA\u05BC", buttonLabel: "\u05EA Tav", description: "tav" },
+        ];
+        
+        // Whitespace characters are characters that require no ink to write
+        // when written traditionally on paper. In essence they are spaces between
+        // words or lines.
+        var whiteSpaceCharacters = [
+            { text: " ", buttonLabel: "[space]", description: "add space" },
+            { text: "\n", buttonLabel: "[start new line]", description: "start new line" },
+            { text: "\t", buttonLabel: "[indent]", description: "indent" },
+        ];
+        
+        // Punctuation characters.
+        // Note, in the Hebrew script,
+        // Geresh roughly corresponds to single quote
+        // in Latin script. Gershayim roughly corresponds to
+        // double quote. But they have extra uses that
+        // have no equivalent in the Latin script.
+        var punctuationCharacters = [
+            { text: ".", buttonLabel: ".", description: "." },
+            { text: ",", buttonLabel: ",", description: "," },
+            { text: "?", buttonLabel: "?", description: "?" },
+            { text: ";", buttonLabel: ";", description: ";" },
+            { text: ":", buttonLabel: ":", description: ":" },
+            { text: "\u05F3", buttonLabel: "\u05F3 geresh", description: "\u05F3 geresh" },
+            { text: "\u05F4", buttonLabel: "\u05F4 gershayim", description: "\u05F4 gershayim" },
+        ];
+        
+        // The following are combinations of letters with diacritics.
+        // Some of these are tricky to type correctly on a keyboard.
+        var letterCombinations = [
+            { text: "\u05D5\u05BC", buttonLabel: "\u05D5\u05BC vav with mappiq", description: "vav with mappiq" },
+            { text: "\u05D5\u05B9", buttonLabel: "\uFB4B vav with holam", description: "vav with holam" },
+            { text: "\u05D5\u05BA", buttonLabel: "\u05D5\u05BA vav with holam haser", description: "vav with holam haser" },
+        ];
+        
+        
+        var finalCharacters = [
+            { text: "\u05DA", buttonLabel: "\u05DA Khaf Sofit", description: "khaf sofit" },
+            { text: "\u05DA", buttonLabel: "\u05DA\u05BC Kaf Sofit", description: "kaf sofit" },
+            { text: "\u05DD", buttonLabel: "\u05DD Mem Sofit", description: "mem sofit" },
+            { text: "\u05DF", buttonLabel: "\u05DF Nun Sofit", description: "nun sofit" },
+            { text: "\u05E3", buttonLabel: "\u05E3 Feh Sofit", description: "feh sofit" },
+            { text: "\u05E3", buttonLabel: "\u05E3\u05BC Peh Sofit", description: "peh sofit" },
+            { text: "\u05E5", buttonLabel: "\u05E5 Tsadeh Sofit", description: "tsadi sofit" },
+        ];
+        
+        // This function returns a function that places text
+        // at the end of the text area.
+        function onClickButtonForWriting(textToWrite) {
+            function enclosedFunction() {
+                document.getElementById("textOutput").value += textToWrite;
+            }
+            return enclosedFunction;
+        }
+
+        // Create a button that when pressed
+        // writes text into a text box.
+        // The parameter is expected to have
+        // text, button, and description properties of type string.
+        function createButtonForWriting(letter) {
+            return createLabelledButtonForWriting(letter.text, letter.buttonLabel, letter.description);
+        }
+
+        // Create a button that when pressed
+        // writes text into a text box.
+        // All parameters are strings.
+        function createLabelledButtonForWriting(textToWrite, buttonLabel, description) {
+            var aButton = document.createElement("button");
+            var textNode = document.createTextNode(buttonLabel);
+            aButton.appendChild(textNode);
+            aButton.ariaLabel = description;
+            aButton.onclick = onClickButtonForWriting(textToWrite);
+            return aButton;
+        }
+
+        // Create a heading of a particular level.
+        // This first argument is a number such as "1", "2", all the way to "6".
+        // The second argument is the text to show in the heading.
+        function createHeading(level, textToShow) {
+            var element = document.createElement("h" + level);
+            var textNode = document.createTextNode(textToShow);
+            element.appendChild(textNode);
+            return element;
+        }
+
+
+        function attachButtonsForWriting(idOfRootElement) {
+            var root = document.getElementById(idOfRootElement);
+
+            root.dir = "rtl";
+
+            var whiteSpaceDiv = document.createElement("div");
+            whiteSpaceDiv.className = "whitespace";
+            root.appendChild(createHeading(2, "Spacing"))
+            for (var i = 0; i < whiteSpaceCharacters.length; i++) {
+                whiteSpaceDiv.appendChild(createButtonForWriting(whiteSpaceCharacters[i]));
+            }
+            root.appendChild(whiteSpaceDiv);
+
+            var punctuationDiv = document.createElement("div");
+            punctuationDiv.className = "punctuation";
+            root.appendChild(createHeading(2, "Punctuation"))
+
+            for (var i = 0; i < punctuationCharacters.length; i++) {
+                punctuationDiv.appendChild(createButtonForWriting(punctuationCharacters[i]));
+            }
+            root.appendChild(punctuationDiv);
+
+            var alphabetDiv = document.createElement("div");
+            alphabetDiv.className = "alphabet";
+            root.appendChild(createHeading(2, "Alphabet"))
+
+            for (var i = 0; i < alphabet.length; i++) {
+                alphabetDiv.appendChild(createButtonForWriting(alphabet[i]));
+            }
+            root.appendChild(alphabetDiv);
+
+            var finalCharactersDiv = document.createElement("div");
+            root.appendChild(createHeading(2, "Final Characters"))
+
+            finalCharactersDiv.className = "finals";
+            for (var i = 0; i < finalCharacters.length; i++) {
+                finalCharactersDiv.appendChild(createButtonForWriting(finalCharacters[i]));
+            }
+            root.appendChild(finalCharactersDiv);
+
+
+            var combinationsDiv = document.createElement("div");
+            root.appendChild(createHeading(2, "Letter Combinations"))
+
+            combinationsDiv.className = "combinations";
+            for (var i = 0; i < letterCombinations.length; i++) {
+                combinationsDiv.appendChild(createButtonForWriting(letterCombinations[i]));
+            }
+            root.appendChild(combinationsDiv);
+        }
+
+        // Create heading for the whole Hebrew Alphabet Basic keyboard
+        // application.
+        function createAppHeading() {
+            var heading1 = createHeading("1", "Hebrew Alphabet Basic Keyboard");
+            return heading1;
+        }
+
+        // Create a text area. The text the user types appears here.
+        function createTextArea() {
+            var textArea = document.createElement("textarea");
+            textArea.id = "textOutput";
+            textArea.dir = "rtl";
+            textArea.style = "width:95%";
+            textArea.rows = 4;
+
+            // Set the text area language to Hebrew.
+            textArea.lang = "he";
+
+            var placeholderText = "Text you type with buttons below gets added to the end of the text in this text box";
+            textArea.ariaLabel = placeholderText;
+            textArea.placeholder = placeholderText;
+            return textArea
+
+        }
+
+        // Create a footer.
+        function createFooter() {
+            var footer = document.createElement("footer");
+            var link = document.createElement("a");
+            link.href = "https://www.jewishvirtuallibrary.org/the-hebrew-alphabet-aleph-bet";
+            var linkText = document.createTextNode("The Hebrew Alphabet (Aleph-Bet)");
+            link.appendChild(linkText);
+            footer.appendChild(link);
+            return footer;
+        }
+
+        root.appendChild(document.createComment("Start of HTML code generated by Javascript."));
+        root.appendChild(createTextArea());
+        attachButtonsForWriting("root");
+        root.appendChild(createFooter());
+
+
+        root.appendChild(document.createComment("End of HTML code generated by Javascript."));
+    </script>
+
+</body>
+<!-- Created by Elsanussi Mneina (he/him). You can contact me (Elsanussi Mneina) at grassdewmorning@gmail.com, mentioning this page)
+  This single page web application for typing Hebrew syllable by syllable was first released to the public on March 30, 2022 on GitHub under an MIT license.
+https://github.com/elsanussi-s-mneina/hebrew-alphabet-syllabic-keyboard-html-js/
+Here is the LICENSE for this web application:
+MIT License
+Copyright (c) 2022 Elsanussi Mneina
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+
 </html>
-<!--
-Creative Commons Legal Code
-
-CC0 1.0 Universal
-
-    CREATIVE COMMONS CORPORATION IS NOT A LAW FIRM AND DOES NOT PROVIDE
-    LEGAL SERVICES. DISTRIBUTION OF THIS DOCUMENT DOES NOT CREATE AN
-    ATTORNEY-CLIENT RELATIONSHIP. CREATIVE COMMONS PROVIDES THIS
-    INFORMATION ON AN "AS-IS" BASIS. CREATIVE COMMONS MAKES NO WARRANTIES
-    REGARDING THE USE OF THIS DOCUMENT OR THE INFORMATION OR WORKS
-    PROVIDED HEREUNDER, AND DISCLAIMS LIABILITY FOR DAMAGES RESULTING FROM
-    THE USE OF THIS DOCUMENT OR THE INFORMATION OR WORKS PROVIDED
-    HEREUNDER.
-
-Statement of Purpose
-
-The laws of most jurisdictions throughout the world automatically confer
-exclusive Copyright and Related Rights (defined below) upon the creator
-and subsequent owner(s) (each and all, an "owner") of an original work of
-authorship and/or a database (each, a "Work").
-
-Certain owners wish to permanently relinquish those rights to a Work for
-the purpose of contributing to a commons of creative, cultural and
-scientific works ("Commons") that the public can reliably and without fear
-of later claims of infringement build upon, modify, incorporate in other
-works, reuse and redistribute as freely as possible in any form whatsoever
-and for any purposes, including without limitation commercial purposes.
-These owners may contribute to the Commons to promote the ideal of a free
-culture and the further production of creative, cultural and scientific
-works, or to gain reputation or greater distribution for their Work in
-part through the use and efforts of others.
-
-For these and/or other purposes and motivations, and without any
-expectation of additional consideration or compensation, the person
-associating CC0 with a Work (the "Affirmer"), to the extent that he or she
-is an owner of Copyright and Related Rights in the Work, voluntarily
-elects to apply CC0 to the Work and publicly distribute the Work under its
-terms, with knowledge of his or her Copyright and Related Rights in the
-Work and the meaning and intended legal effect of CC0 on those rights.
-
-1. Copyright and Related Rights. A Work made available under CC0 may be
-protected by copyright and related or neighboring rights ("Copyright and
-Related Rights"). Copyright and Related Rights include, but are not
-limited to, the following:
-
-  i. the right to reproduce, adapt, distribute, perform, display,
-     communicate, and translate a Work;
- ii. moral rights retained by the original author(s) and/or performer(s);
-iii. publicity and privacy rights pertaining to a person's image or
-     likeness depicted in a Work;
- iv. rights protecting against unfair competition in regards to a Work,
-     subject to the limitations in paragraph 4(a), below;
-  v. rights protecting the extraction, dissemination, use and reuse of data
-     in a Work;
- vi. database rights (such as those arising under Directive 96/9/EC of the
-     European Parliament and of the Council of 11 March 1996 on the legal
-     protection of databases, and under any national implementation
-     thereof, including any amended or successor version of such
-     directive); and
-vii. other similar, equivalent or corresponding rights throughout the
-     world based on applicable law or treaty, and any national
-     implementations thereof.
-
-2. Waiver. To the greatest extent permitted by, but not in contravention
-of, applicable law, Affirmer hereby overtly, fully, permanently,
-irrevocably and unconditionally waives, abandons, and surrenders all of
-Affirmer's Copyright and Related Rights and associated claims and causes
-of action, whether now known or unknown (including existing as well as
-future claims and causes of action), in the Work (i) in all territories
-worldwide, (ii) for the maximum duration provided by applicable law or
-treaty (including future time extensions), (iii) in any current or future
-medium and for any number of copies, and (iv) for any purpose whatsoever,
-including without limitation commercial, advertising or promotional
-purposes (the "Waiver"). Affirmer makes the Waiver for the benefit of each
-member of the public at large and to the detriment of Affirmer's heirs and
-successors, fully intending that such Waiver shall not be subject to
-revocation, rescission, cancellation, termination, or any other legal or
-equitable action to disrupt the quiet enjoyment of the Work by the public
-as contemplated by Affirmer's express Statement of Purpose.
-
-3. Public License Fallback. Should any part of the Waiver for any reason
-be judged legally invalid or ineffective under applicable law, then the
-Waiver shall be preserved to the maximum extent permitted taking into
-account Affirmer's express Statement of Purpose. In addition, to the
-extent the Waiver is so judged Affirmer hereby grants to each affected
-person a royalty-free, non transferable, non sublicensable, non exclusive,
-irrevocable and unconditional license to exercise Affirmer's Copyright and
-Related Rights in the Work (i) in all territories worldwide, (ii) for the
-maximum duration provided by applicable law or treaty (including future
-time extensions), (iii) in any current or future medium and for any number
-of copies, and (iv) for any purpose whatsoever, including without
-limitation commercial, advertising or promotional purposes (the
-"License"). The License shall be deemed effective as of the date CC0 was
-applied by Affirmer to the Work. Should any part of the License for any
-reason be judged legally invalid or ineffective under applicable law, such
-partial invalidity or ineffectiveness shall not invalidate the remainder
-of the License, and in such case Affirmer hereby affirms that he or she
-will not (i) exercise any of his or her remaining Copyright and Related
-Rights in the Work or (ii) assert any associated claims and causes of
-action with respect to the Work, in either case contrary to Affirmer's
-express Statement of Purpose.
-
-4. Limitations and Disclaimers.
-
- a. No trademark or patent rights held by Affirmer are waived, abandoned,
-    surrendered, licensed or otherwise affected by this document.
- b. Affirmer offers the Work as-is and makes no representations or
-    warranties of any kind concerning the Work, express, implied,
-    statutory or otherwise, including without limitation warranties of
-    title, merchantability, fitness for a particular purpose, non
-    infringement, or the absence of latent or other defects, accuracy, or
-    the present or absence of errors, whether or not discoverable, all to
-    the greatest extent permissible under applicable law.
- c. Affirmer disclaims responsibility for clearing rights of other persons
-    that may apply to the Work or any use thereof, including without
-    limitation any person's Copyright and Related Rights in the Work.
-    Further, Affirmer disclaims responsibility for obtaining any necessary
-    consents, permissions or other rights required for any use of the
-    Work.
- d. Affirmer understands and acknowledges that Creative Commons is not a
-    party to this document and has no duty or obligation with respect to
-    this CC0 or use of the Work.
-
---> 
